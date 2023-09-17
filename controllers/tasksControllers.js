@@ -1,62 +1,57 @@
-const fs = require("fs").promises;
-// const fs = require('fs/promises');
-const path = require("path");
-const crypto = require("crypto");
-
-const tasksPath = path.join(__dirname, "..", "db", "tasks.json");
-// const tasksPath = path.join(process.cwd(), "db", "tasks.json");
+const {
+  getAllTasksService,
+  getTaskByIdService,
+  addTaskService,
+  updateTaskService,
+  deletedTaskService,
+} = require("../services/tasksService");
 
 const getAllTasks = async (req, res, next) => {
-  const tasks = await readDatabase();
-  res.json(tasks);
+  try {
+    const tasks = await getAllTasksService();
+    res.json(tasks);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const getTaskById = async (req, res, next) => {
-  const tasks = await readDatabase();
-  const task = tasks.find(task => task.id === req.params.taskId);
-  if (!task) {
-    return res.status(404).json({ message: "Task not found" });
+  try {
+    const { taskId } = req.params;
+    const task = await getTaskByIdService(taskId);
+    res.json(task);
+  } catch (error) {
+    next(error);
   }
-  res.json(task);
 };
 
 const addTask = async (req, res, next) => {
-  const tasks = await readDatabase();
-  const newTask = { id: crypto.randomUUID(), ...req.body };
-  tasks.push(newTask);
-  await writeDatabase(tasks);
-  res.status(201).json(newTask);
+  try {
+    const newTask = await addTaskService(req.body);
+    res.status(201).json(newTask);
+  } catch (error) {
+    next(error);
+  }
 };
 
 const updateTask = async (req, res, next) => {
-  const tasks = await readDatabase();
-  const index = tasks.findIndex(task => task.id === req.params.taskId);
-  if (index === -1) {
-    return res.status(404).json({ message: "Task not found" });
+  try {
+    const { taskId } = req.params;
+    const task = await updateTaskService(taskId, req.body);
+    res.json(task);
+  } catch (error) {
+    next(error);
   }
-  tasks[index] = { ...tasks[index], ...req.body };
-  await writeDatabase(tasks);
-  res.json(tasks[index]);
 };
 
 const deleteTask = async (req, res, next) => {
-  const tasks = await readDatabase();
-  const index = tasks.findIndex(task => task.id === req.params.taskId);
-  if (index === -1) {
-    return res.status(404).json({ message: "Task not found" });
+  try {
+    const { taskId } = req.params;
+    const deletedTask = await deletedTaskService(taskId);
+    res.json(deletedTask);
+  } catch (error) {
+    next(error);
   }
-  const [deletedTask] = tasks.splice(index, 1);
-  await writeDatabase(tasks);
-  res.json(deletedTask);
 };
-
-async function readDatabase() {
-  const data = await fs.readFile(tasksPath);
-  return JSON.parse(data);
-}
-
-async function writeDatabase(data) {
-  await fs.writeFile(tasksPath, JSON.stringify(data, null, 2));
-}
 
 module.exports = { getAllTasks, getTaskById, addTask, updateTask, deleteTask };
