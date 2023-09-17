@@ -1,10 +1,5 @@
 [
   {
-    "id": "2",
-    "title": "Do laundry",
-    "completed": false
-  },
-  {
     "id": "3",
     "title": "Finish project",
     "completed": true
@@ -13,5 +8,10 @@
     "id": "e96055a2-c8d7-4431-a94e-2e785fd20031",
     "title": "Hello",
     "completed": false
+  },
+  {
+    "id": "f3953498-cbcc-4b55-8f3b-a101c800b026",
+    "title": "Finish All",
+    "completed": true
   }
 ]

@@ -1,7 +1,9 @@
 const globalErrorHandle = (err, req, res, next) => {
-  res
-    .status(500)
-    .json({ message: "Something went wrong, please try again later" });
+  const {
+    status = 500,
+    message = 'Something went wrong, please try again later',
+  } = err;
+  res.status(status).json({ message });
 };
 
 module.exports = { globalErrorHandle };
