@@ -14,10 +14,15 @@ const {
 
 const router = express.Router();
 
-router.get('/', getAllTasks);
-router.get('/:taskId', getTaskById);
-router.post('/', validateBody(createValidationTaskSchema), addTask);
-router.patch('/:taskId', validateBody(updateTaskValidationSchema), updateTask);
-router.delete('/:taskId', deleteTask);
+router
+  .route('/')
+  .get(getAllTasks)
+  .post(validateBody(createValidationTaskSchema), addTask);
+
+router
+  .route('/:taskId')
+  .get(getTaskById)
+  .patch(validateBody(updateTaskValidationSchema), updateTask)
+  .delete(deleteTask);
 
 module.exports = { tasksRouter: router };
