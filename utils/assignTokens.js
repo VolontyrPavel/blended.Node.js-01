@@ -6,7 +6,7 @@ const {
   REFRESH_TOKEN_EXPIRES_IN,
 } = process.env;
 
-const assignTokens = (user) => {
+const assignTokens = user => {
   const payload = {
     id: user._id,
   };

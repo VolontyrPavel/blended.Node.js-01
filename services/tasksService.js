@@ -1,37 +1,40 @@
-const Task = require('../models/Task');
+const Task = require("../models/Task");
+const User = require("../models/User");
 
-const HttpError = require('../utils/HttpError');
+const HttpError = require("../utils/HttpError");
 
-const getAllTasksService = async () => {
-  return await Task.find();
+const getAllTasksService = async userId => {
+  return await Task.find({ owner: userId });
 };
 
-const getTaskByIdService = async (taskId) => {
-  const task = await Task.findById(taskId);
+const getTaskByIdService = async (taskId, userId) => {
+  const task = await Task.findOne({ _id: taskId, owner: userId });
 
   if (!task) {
-    throw new HttpError(404, 'Task not found');
+    throw new HttpError(404, "Task not found");
   }
 
   return task;
 };
 
-const addTaskService = async (body) => {
-  return await Task.create(body);
+const addTaskService = async (body, userId) => {
+  return await Task.create({ ...body, owner: userId });
 };
 
-const updateTaskService = async (taskId, body) => {
-  const updatedTask = await Task.findByIdAndUpdate(taskId, body, { new: true });
+const updateTaskService = async (taskId, userId, body) => {
+  const updatedTask = await Task.findOneAndUpdate({ _id: taskId, owner: userId }, body, {
+    new: true,
+  });
   if (!updatedTask) {
-    throw new HttpError(404, 'Task not found');
+    throw new HttpError(404, "Task not found");
   }
   return updatedTask;
 };
 
-const deletedTaskService = async (taskId) => {
-  const deletedTask = await Task.findByIdAndDelete(taskId);
+const deletedTaskService = async (taskId, userId) => {
+  const deletedTask = await Task.findOneAndDelete({ _id: taskId, owner: userId });
   if (!deletedTask) {
-    throw new HttpError(404, 'Task not found');
+    throw new HttpError(404, "Task not found");
   }
   return deletedTask;
 };

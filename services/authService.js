@@ -10,12 +10,7 @@ const registrationService = async (body) => {
     throw new HttpError(409, "User already exist ");
   }
 
-  const hashPassword = await bcrypt.hash(body.password, 12);
-
-  return await User.create({
-    ...body,
-    password: hashPassword,
-  });
+  return await User.create(body);
 };
 
 const loginService = async ({ email, password }) => {
